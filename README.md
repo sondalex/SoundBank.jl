@@ -17,7 +17,7 @@ sudo dnf install libnsl
 
 ```julia
 using Pkg
-Pkg.add(path = "path/to/SoundBank") # or Pkg.add("SoundBank") once registered
+Pkg.add(url = "https://github.com/sondalex/SoundBank.jl.git") # or Pkg.add("SoundBank") once registered
 ```
 
 ## Usage
