@@ -1,0 +1,68 @@
+name: Release
+
+# Regenerates recordings.toml from the `university-iowa-piano-samples`
+# dataset (https://huggingface.co/datasets/sondalex/university-iowa-piano-samples)
+# whenever a version tag is pushed, and commits it if it changed.
+#
+# SoundBank.jl has no release asset of its own to publish: recordings are
+# downloaded directly from Hugging Face by end users, lazily, the first
+# time each note is actually requested (see src/artifacts.jl and
+# recordings.toml) -- no git-lfs, no GitHub Release, nothing to build or
+# upload here.
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  regenerate-manifest:
+    runs-on: ubuntu-latest
+    env:
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+
+      - name: Instantiate scripts environment
+        run: julia --project=scripts -e 'import Pkg; Pkg.instantiate()'
+
+      - name: Regenerate recordings.toml
+        run: |
+          julia --project=scripts scripts/generate_recordings_manifest.jl \
+            recordings.toml \
+            "https://huggingface.co/datasets/sondalex/university-iowa-piano-samples/resolve/main"
+
+      - name: Verify a bundled recording resolves from the regenerated manifest
+        run: |
+          julia --project=. -e 'import Pkg; Pkg.instantiate()'
+          julia --project=. -e '
+            using SoundBank
+            piano = instrument(UniversityIowaSBank(), :piano)
+            c4 = note(piano, "C4"; dynamic = :pp)
+            path = bundled_note_path(c4)
+            @assert isfile(path) "expected $(path) to exist"
+            println("resolved ", path)
+          '
+
+      - name: Commit the updated recordings.toml
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add recordings.toml
+          if git diff --cached --quiet; then
+            echo "recordings.toml unchanged, nothing to commit"
+            exit 0
+          fi
+          git commit -m "Regenerate recordings.toml for ${GITHUB_REF_NAME}"
+          git push origin "HEAD:${DEFAULT_BRANCH}"

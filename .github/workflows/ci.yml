@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v2
+        with:
+          version: "1"
+
+      - uses: julia-actions/cache@v2
+
+      - name: Pkg.instantiate()
+        run: julia --project=. -e 'import Pkg; Pkg.instantiate()'
+
+      - name: Resolve a bundled recording (downloads over plain HTTPS from Hugging Face)
+        run: |
+          julia --project=. -e '
+            using SoundBank
+            piano = instrument(UniversityIowaSBank(), :piano)
+            c4 = note(piano, "C4"; dynamic = :pp)
+            path = bundled_note_path(c4)
+            @assert isfile(path) "expected $(path) to exist"
+            buffer = audio(c4)
+            @assert !isempty(buffer.samples) "expected decoded samples"
+            println("resolved and decoded ", path)
+          '
+
+      - name: Run test suite
+        run: julia --project=. -e 'import Pkg; Pkg.test(coverage=false)'

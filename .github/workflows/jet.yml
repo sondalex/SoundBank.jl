@@ -1,0 +1,33 @@
+name: JET
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  jet:
+    name: JET static analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Julia
+        uses: julia-actions/setup-julia@v3
+        with:
+          version: "1"
+
+      - uses: julia-actions/cache@v3
+
+      - name: Run JET.test_package
+        run: |
+          julia --project=. --startup-file=no -e '
+            import Pkg
+            Pkg.activate(; temp = true)
+            Pkg.develop(path = ".")
+            Pkg.add("JET")
+            using JET, SoundBank
+            JET.test_package(SoundBank; target_modules = (SoundBank,))
+          '
