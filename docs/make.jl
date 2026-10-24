@@ -43,5 +43,4 @@ makedocs(;
 deploydocs(;
     repo = "github.com/sondalex/SoundBank.jl.git",
     devbranch = "main",
-    push_preview = true,
 )
