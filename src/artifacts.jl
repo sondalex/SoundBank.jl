@@ -16,6 +16,7 @@ using Downloads
 using ProgressMeter
 using SHA
 using TOML
+using Scratch
 
 """
     recordings_manifest_path() -> String
@@ -24,19 +25,13 @@ Path to the `recordings.toml` manifest bundled with this package.
 """
 recordings_manifest_path() = normpath(joinpath(@__DIR__, "..", "recordings.toml"))
 
-"""
-    cache_dir() -> String
 
-Local directory recordings are cached in after first download. Defaults
-to `~/.cache/SoundBank`, overridable via the `SOUNDBANK_CACHE_DIR`
-environment variable (e.g. for tests or CI). Created if it doesn't
-already exist.
-"""
-function cache_dir()
-    dir = get(ENV, "SOUNDBANK_CACHE_DIR", joinpath(homedir(), ".cache", "SoundBank"))
-    mkpath(dir)
-    return dir
+dataset_dir = ""
+
+function __init__()
+    return global dataset_dir = get_scratch!(@__MODULE__, "dataset")
 end
+
 
 """
     load_recordings_manifest() -> Dict{String,Any}
@@ -81,7 +76,7 @@ function bundled_note_path(sound::Sound)
     )
     entry = manifest[name]
 
-    dest = joinpath(cache_dir(), entry["filename"])
+    dest = joinpath(dataset_dir, entry["filename"])
     if isfile(dest) && sha256_of(dest) == entry["sha256"]
         return dest
     end

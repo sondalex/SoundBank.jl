@@ -1,6 +1,10 @@
 using Test
 using SoundBank
 
+const TEST_HEADLESS = lowercase(
+    get(ENV, "SOUNDBANK_HEADLESS", "false")
+) in ("true", "1", "yes")
+
 @testset "SoundBank.jl" begin
     include("notes.jl")
     include("audio.jl")
