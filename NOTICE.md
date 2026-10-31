@@ -29,7 +29,7 @@ permission statement from the source should be independently verified by
 users for their own use case, especially for commercial or redistributive
 purposes.
 
-Recordings are cached locally (by default under `~/.cache/SoundBank`) after
+Recordings are cached locally using [Scratch.jl](https://github.com/JuliaPackaging/Scratch.jl) after
 first download.
 
 ## Software license

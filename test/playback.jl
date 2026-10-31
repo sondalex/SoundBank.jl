@@ -8,7 +8,7 @@ Mocking.activate()
     bank = UniversityIowaSBank()
     piano = instrument(bank, :piano)
     c4 = note(piano, "C4"; dynamic = :pp)
-    buf = audio(c4)
+    buf = audio(c4, 0.0u"s" .. 1.0u"s")
 
     @testset "play_with_animation(animate=false) delegates to send_to_device" begin
         calls = Ref(0)
@@ -79,6 +79,8 @@ Mocking.activate()
     end
 
     @testset "send_to_device raises an informative error without a real device" begin
-        @test_throws ErrorException SoundBank.send_to_device(buf)
+        if TEST_HEADLESS
+            @test_throws ErrorException SoundBank.send_to_device(buf)
+        end
     end
 end
