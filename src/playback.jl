@@ -12,6 +12,7 @@ without an audio device (e.g. CI, containers) can still load and use every
 other part of this package; only `play` requires a device.
 """
 
+using Mocking
 using PortAudio: PortAudioStream
 
 """
@@ -92,11 +93,11 @@ animation overhead.
 """
 function play_with_animation(buf::AudioBuffer; animate::Bool = true)::Nothing
     if !animate || !isa(stdout, Base.TTY)
-        send_to_device(buf)
+        @mock send_to_device(buf)
         return nothing
     end
 
-    audio_task = @async send_to_device(buf)
+    audio_task = @async @mock send_to_device(buf)
     try
         animate_playback(buf)
     finally

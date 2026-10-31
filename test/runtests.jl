@@ -7,4 +7,6 @@ using SoundBank
     include("timespan.jl")
     include("chord.jl")
     include("visualize.jl")
+    include("artifacts.jl")
+    include("playback.jl")
 end
