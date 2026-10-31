@@ -46,5 +46,5 @@ jobs:
         uses: codecov/codecov-action@v5
         with:
           files: lcov.info
-          use_oidc: true
+          token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
