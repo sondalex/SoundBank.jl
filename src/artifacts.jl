@@ -29,7 +29,7 @@ recordings_manifest_path() = normpath(joinpath(@__DIR__, "..", "recordings.toml"
 dataset_dir = ""
 
 function __init__()
-    return global dataset_dir = get_scratch!(@__MODULE__, "dataset")
+    return global dataset_dir = get_scratch!(@__MODULE__, "soundbanks")
 end
 
 
@@ -75,8 +75,9 @@ function bundled_note_path(sound::Sound)
         )
     )
     entry = manifest[name]
-
-    dest = joinpath(dataset_dir, entry["filename"])
+    basedir = joinpath(dataset_dir, sbank_dir(bank))
+    mkpath(basedir)
+    dest = joinpath(basedir, entry["filename"])
     if isfile(dest) && sha256_of(dest) == entry["sha256"]
         return dest
     end
