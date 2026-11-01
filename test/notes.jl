@@ -1,3 +1,6 @@
+struct TempBank <: SBank
+end
+
 @testset "notes" begin
     bank = UniversityIowaSBank()
     piano = instrument(bank, :piano)
@@ -27,5 +30,13 @@
     @testset "SBank interface" begin
         @test SoundBank.artifact_member_name(bank, piano, "C4", :pp) == "piano_pp_C4"
         @test SoundBank.artifact_member_name(bank, guitar, "A3", :ff) == "guitar_ff_A3"
+    end
+    @testset "sbank_name raises error on unimplemented method for concrete class" begin
+        sbank = TempBank()
+        @test_throws ErrorException sbank_name(sbank)
+    end
+    @testset "sbank_dir raises error on unimplemented method for concrete class" begin
+        sbank = TempBank()
+        @test_throws ErrorException sbank_dir(sbank)
     end
 end
