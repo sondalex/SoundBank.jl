@@ -21,6 +21,21 @@ Concrete subtypes must implement:
 abstract type SBank end
 
 """
+Name of the sound bank
+"""
+function sbank_name(sbank::SBank)
+    error("Type $(typeof(sbank)) must implement `sbank_name(sbank)`")
+end
+
+"""
+Implementations are responsible for safety
+"""
+function sbank_dir(sbank::SBank)
+    error("Type $(typeof(sbank)) must implement `sbank_dir(sbank)`")
+end
+
+
+"""
     artifact_member_name(bank::SBank, inst::Instrument, pitch, dynamic) -> String
 
 Name of the lazily-downloaded `recordings.toml` entry holding the
@@ -44,6 +59,15 @@ Recordings from the University of Iowa Musical Instrument Samples (MIS)
 collection. See NOTICE.md for attribution.
 """
 struct UniversityIowaSBank <: SBank
+end
+
+
+function sbank_name(sbank::UniversityIowaSBank)
+    return "UniversityIowaSBank"
+end
+
+function sbank_dir(sbank::UniversityIowaSBank)
+    return lowercase(sbank_name(sbank))
 end
 
 function artifact_member_name(::UniversityIowaSBank, inst, pitch::AbstractString, dynamic::Symbol)

@@ -37,7 +37,7 @@ export audio, play
 export AudioBuffer
 export TimeSpan, duration
 export bundled_note_path
-export UniversityIowaSBank, instrument, note, Sound
+export SBank, UniversityIowaSBank, instrument, note, Sound, sbank_name, sbank_dir
 export chord, Chord, mix
 
 end # module SoundBank
