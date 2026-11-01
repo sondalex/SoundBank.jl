@@ -24,14 +24,14 @@ abstract type SBank end
 Name of the sound bank
 """
 function sbank_name(sbank::SBank)
-    error("Type $(typeof(bank)) must implement `sbank_name(sbank)`")
+    error("Type $(typeof(sbank)) must implement `sbank_name(sbank)`")
 end
 
 """
 Implementations are responsible for safety
 """
 function sbank_dir(sbank::SBank)
-    error("Type $(typeof(bank)) must implement `sbank_dir(sbank)`")
+    error("Type $(typeof(sbank)) must implement `sbank_dir(sbank)`")
 end
 
 
